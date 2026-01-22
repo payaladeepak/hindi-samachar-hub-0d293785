@@ -8,7 +8,8 @@ import {
   Home,
   LogOut,
   X,
-  Menu
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { SITE_NAME } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,22 +25,23 @@ const navItems = [
 ];
 
 interface AdminSidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onToggle: () => void;
+  isMobileOpen: boolean;
+  isCollapsed: boolean;
+  onMobileClose: () => void;
+  onToggleCollapse: () => void;
 }
 
-export function AdminSidebar({ isOpen, onClose, onToggle }: AdminSidebarProps) {
+export function AdminSidebar({ isMobileOpen, isCollapsed, onMobileClose, onToggleCollapse }: AdminSidebarProps) {
   const location = useLocation();
   const { signOut, user } = useAuth();
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {isOpen && (
+      {/* Mobile Overlay - closes sidebar when tapped */}
+      {isMobileOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onClose}
+          onClick={onMobileClose}
         />
       )}
 
@@ -47,19 +49,29 @@ export function AdminSidebar({ isOpen, onClose, onToggle }: AdminSidebarProps) {
       <aside 
         className={cn(
           "fixed lg:sticky top-0 left-0 z-50 h-screen bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 ease-in-out",
-          isOpen ? "w-64 translate-x-0" : "-translate-x-full lg:translate-x-0 lg:w-16"
+          // Mobile: slide in/out
+          isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0",
+          // Desktop: collapsed or expanded
+          isCollapsed ? "lg:w-16" : "lg:w-64"
         )}
       >
-        {/* Logo & Close Button */}
+        {/* Logo & Toggle Buttons */}
         <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
-          <Link to="/admin" className={cn("block", !isOpen && "lg:hidden")}>
+          {/* Full logo - shown when expanded */}
+          <Link 
+            to="/admin" 
+            className={cn(
+              "block transition-opacity",
+              isCollapsed ? "lg:hidden" : ""
+            )}
+          >
             <h1 className="text-xl font-bold text-sidebar-primary font-display">{SITE_NAME}</h1>
             <span className="text-xs text-sidebar-foreground/70">एडमिन पैनल</span>
           </Link>
           
-          {/* Collapsed Logo */}
-          {!isOpen && (
-            <Link to="/admin" className="hidden lg:block">
+          {/* Collapsed Logo - shown when sidebar is collapsed on desktop */}
+          {isCollapsed && (
+            <Link to="/admin" className="hidden lg:block mx-auto">
               <h1 className="text-xl font-bold text-sidebar-primary font-display">स</h1>
             </Link>
           )}
@@ -68,20 +80,23 @@ export function AdminSidebar({ isOpen, onClose, onToggle }: AdminSidebarProps) {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={onClose}
+            onClick={onMobileClose}
             className="lg:hidden text-sidebar-foreground hover:bg-sidebar-accent"
           >
             <X className="w-5 h-5" />
           </Button>
 
-          {/* Collapse button for desktop */}
+          {/* Collapse/Expand button for desktop */}
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={onToggle}
-            className="hidden lg:flex text-sidebar-foreground hover:bg-sidebar-accent"
+            onClick={onToggleCollapse}
+            className={cn(
+              "hidden lg:flex text-sidebar-foreground hover:bg-sidebar-accent",
+              isCollapsed && "mx-auto"
+            )}
           >
-            <Menu className="w-5 h-5" />
+            {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
           </Button>
         </div>
 
@@ -96,18 +111,18 @@ export function AdminSidebar({ isOpen, onClose, onToggle }: AdminSidebarProps) {
                 <li key={item.href}>
                   <Link
                     to={item.href}
-                    onClick={onClose}
+                    onClick={onMobileClose}
                     className={cn(
                       "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors",
                       isActive 
                         ? "bg-sidebar-accent text-sidebar-primary font-medium" 
                         : "hover:bg-sidebar-accent/50",
-                      !isOpen && "lg:justify-center lg:px-2"
+                      isCollapsed && "lg:justify-center lg:px-2"
                     )}
-                    title={!isOpen ? item.label : undefined}
+                    title={isCollapsed ? item.label : undefined}
                   >
                     <item.icon className="w-5 h-5 flex-shrink-0" />
-                    <span className={cn(!isOpen && "lg:hidden")}>{item.label}</span>
+                    <span className={cn(isCollapsed && "lg:hidden")}>{item.label}</span>
                   </Link>
                 </li>
               );
@@ -121,25 +136,25 @@ export function AdminSidebar({ isOpen, onClose, onToggle }: AdminSidebarProps) {
             to="/"
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors",
-              !isOpen && "lg:justify-center lg:px-2"
+              isCollapsed && "lg:justify-center lg:px-2"
             )}
-            title={!isOpen ? "वेबसाइट देखें" : undefined}
+            title={isCollapsed ? "वेबसाइट देखें" : undefined}
           >
             <Home className="w-5 h-5 flex-shrink-0" />
-            <span className={cn(!isOpen && "lg:hidden")}>वेबसाइट देखें</span>
+            <span className={cn(isCollapsed && "lg:hidden")}>वेबसाइट देखें</span>
           </Link>
           <button
             onClick={signOut}
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors w-full text-left",
-              !isOpen && "lg:justify-center lg:px-2"
+              isCollapsed && "lg:justify-center lg:px-2"
             )}
-            title={!isOpen ? "लॉग आउट" : undefined}
+            title={isCollapsed ? "लॉग आउट" : undefined}
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
-            <span className={cn(!isOpen && "lg:hidden")}>लॉग आउट</span>
+            <span className={cn(isCollapsed && "lg:hidden")}>लॉग आउट</span>
           </button>
-          {user && isOpen && (
+          {user && !isCollapsed && (
             <div className="px-3 py-2 text-xs text-sidebar-foreground/60 truncate">
               {user.email}
             </div>
