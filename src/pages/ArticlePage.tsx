@@ -3,6 +3,7 @@ import { MainLayout } from '@/layouts/MainLayout';
 import { useNewsArticle, useNewsArticles } from '@/hooks/useNews';
 import { NEWS_CATEGORIES } from '@/lib/constants';
 import { NewsCard } from '@/components/news/NewsCard';
+import { SocialShareButtons } from '@/components/news/SocialShareButtons';
 import { Loader2, Clock, ArrowLeft } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { hi } from 'date-fns/locale';
@@ -112,8 +113,8 @@ export default function ArticlePage() {
           ))}
         </div>
 
-        {/* Back Link */}
-        <div className="mt-8 pt-8 border-t">
+        {/* Social Share & Back Link */}
+        <div className="mt-8 pt-8 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <Link 
             to="/" 
             className="inline-flex items-center gap-2 text-primary hover:underline"
@@ -121,6 +122,11 @@ export default function ArticlePage() {
             <ArrowLeft className="w-4 h-4" />
             वापस होम पेज पर जाएं
           </Link>
+          
+          <SocialShareButtons 
+            title={article.title} 
+            url={window.location.href} 
+          />
         </div>
       </article>
 
