@@ -12,6 +12,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import ArticlesList from "./pages/admin/ArticlesList";
 import NewArticle from "./pages/admin/NewArticle";
 import EditArticle from "./pages/admin/EditArticle";
+import CategoriesList from "./pages/admin/CategoriesList";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/admin/articles" element={<ArticlesList />} />
             <Route path="/admin/articles/new" element={<NewArticle />} />
             <Route path="/admin/articles/:id/edit" element={<EditArticle />} />
+            <Route path="/admin/categories" element={<CategoriesList />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
