@@ -36,11 +36,14 @@ export function NewsCard({
     return (
       <Link to={`/news/${slug}`} className="block group">
         <article className="relative h-[400px] md:h-[500px] rounded-xl overflow-hidden shadow-2xl">
-          <img
-            src={image_url || '/placeholder.svg'}
-            alt={title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          />
+          <div className="absolute inset-0 bg-muted">
+            <img
+              src={image_url || '/placeholder.svg'}
+              alt={title}
+              className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80" />
           
           {/* Reading overlay effect */}
@@ -89,11 +92,12 @@ export function NewsCard({
     return (
       <Link to={`/news/${slug}`} className="block group">
         <article className="flex gap-4 p-3 rounded-lg hover:bg-accent/50 transition-all duration-300 border border-transparent hover:border-primary/20 hover:shadow-md">
-          <div className="relative w-24 h-20 flex-shrink-0 overflow-hidden rounded-md">
+          <div className="relative w-24 h-20 flex-shrink-0 overflow-hidden rounded-md bg-muted">
             <img
               src={image_url || '/placeholder.svg'}
               alt={title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300" />
           </div>
@@ -118,11 +122,12 @@ export function NewsCard({
   return (
     <Link to={`/news/${slug}`} className="block group">
       <article className="bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full border border-transparent hover:border-primary/30 transform hover:-translate-y-1">
-        <div className="relative aspect-video overflow-hidden">
+        <div className="relative aspect-[16/10] overflow-hidden bg-muted">
           <img
             src={image_url || '/placeholder.svg'}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
           />
           
           {/* Overlay on hover */}
