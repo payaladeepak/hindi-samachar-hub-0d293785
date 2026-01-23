@@ -9,7 +9,8 @@ import {
   LogOut,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FolderOpen
 } from 'lucide-react';
 import { SITE_NAME } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
@@ -20,6 +21,7 @@ const navItems = [
   { icon: LayoutDashboard, label: 'डैशबोर्ड', href: '/admin' },
   { icon: FileText, label: 'सभी खबरें', href: '/admin/articles' },
   { icon: PlusCircle, label: 'नई खबर', href: '/admin/articles/new' },
+  { icon: FolderOpen, label: 'श्रेणियां', href: '/admin/categories' },
   { icon: Users, label: 'उपयोगकर्ता', href: '/admin/users' },
   { icon: Settings, label: 'सेटिंग्स', href: '/admin/settings' },
 ];
