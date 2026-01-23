@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
 import { useCreateArticle, useUpdateArticle, type NewsArticle } from '@/hooks/useNews';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { ImageUpload } from './ImageUpload';
 
 interface ArticleFormProps {
   article?: NewsArticle;
@@ -137,17 +138,12 @@ export function ArticleForm({ article }: ArticleFormProps) {
             </Select>
           </div>
 
-          {/* Image URL */}
-          <div className="space-y-2">
-            <Label htmlFor="image_url">छवि URL</Label>
-            <Input
-              id="image_url"
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-              placeholder="https://example.com/image.jpg"
-            />
-          </div>
+          {/* Image Upload */}
+          <ImageUpload
+            value={formData.image_url}
+            onChange={(url) => setFormData({ ...formData, image_url: url })}
+            label="खबर की छवि"
+          />
 
           {/* Toggles */}
           <div className="flex flex-wrap gap-6 pt-4">
