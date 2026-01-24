@@ -7,15 +7,23 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
 import { useCreateArticle, useUpdateArticle, type NewsArticle } from '@/hooks/useNews';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronDown } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
+import { SEOFields } from './SEOFields';
 
 interface ArticleFormProps {
-  article?: NewsArticle;
+  article?: NewsArticle & {
+    seo_title?: string | null;
+    meta_description?: string | null;
+    keywords?: string[] | null;
+    og_image?: string | null;
+    canonical_url?: string | null;
+  };
 }
 
 function generateSlug(title: string): string {
@@ -31,6 +39,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const { user } = useAuth();
   const createArticle = useCreateArticle();
   const updateArticle = useUpdateArticle();
+  const [seoOpen, setSeoOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     title: article?.title || '',
@@ -40,6 +49,11 @@ export function ArticleForm({ article }: ArticleFormProps) {
     image_url: article?.image_url || '',
     is_breaking: article?.is_breaking || false,
     is_featured: article?.is_featured || false,
+    seo_title: article?.seo_title || '',
+    meta_description: article?.meta_description || '',
+    keywords: article?.keywords || [] as string[],
+    og_image: article?.og_image || '',
+    canonical_url: article?.canonical_url || '',
   });
 
   const isLoading = createArticle.isPending || updateArticle.isPending;
@@ -166,6 +180,35 @@ export function ArticleForm({ article }: ArticleFormProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* SEO Section */}
+      <Collapsible open={seoOpen} onOpenChange={setSeoOpen}>
+        <CollapsibleTrigger asChild>
+          <Button variant="outline" type="button" className="w-full justify-between">
+            SEO सेटिंग्स (Google रैंकिंग के लिए)
+            <ChevronDown className={`w-4 h-4 transition-transform ${seoOpen ? 'rotate-180' : ''}`} />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="pt-4">
+          <SEOFields
+            seoTitle={formData.seo_title}
+            metaDescription={formData.meta_description}
+            keywords={formData.keywords}
+            ogImage={formData.og_image}
+            canonicalUrl={formData.canonical_url}
+            onChange={(field, value) => {
+              const fieldMap: Record<string, string> = {
+                seoTitle: 'seo_title',
+                metaDescription: 'meta_description',
+                ogImage: 'og_image',
+                canonicalUrl: 'canonical_url',
+              };
+              const key = fieldMap[field] || field;
+              setFormData({ ...formData, [key]: value });
+            }}
+          />
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Actions */}
       <div className="flex gap-4">

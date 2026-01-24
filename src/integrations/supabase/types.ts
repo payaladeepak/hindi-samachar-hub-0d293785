@@ -50,6 +50,7 @@ export type Database = {
       news_articles: {
         Row: {
           author_id: string | null
+          canonical_url: string | null
           category: Database["public"]["Enums"]["news_category"]
           content: string
           created_at: string
@@ -58,13 +59,18 @@ export type Database = {
           image_url: string | null
           is_breaking: boolean | null
           is_featured: boolean | null
+          keywords: string[] | null
+          meta_description: string | null
+          og_image: string | null
           published_at: string | null
+          seo_title: string | null
           slug: string
           title: string
           updated_at: string
         }
         Insert: {
           author_id?: string | null
+          canonical_url?: string | null
           category?: Database["public"]["Enums"]["news_category"]
           content: string
           created_at?: string
@@ -73,13 +79,18 @@ export type Database = {
           image_url?: string | null
           is_breaking?: boolean | null
           is_featured?: boolean | null
+          keywords?: string[] | null
+          meta_description?: string | null
+          og_image?: string | null
           published_at?: string | null
+          seo_title?: string | null
           slug: string
           title: string
           updated_at?: string
         }
         Update: {
           author_id?: string | null
+          canonical_url?: string | null
           category?: Database["public"]["Enums"]["news_category"]
           content?: string
           created_at?: string
@@ -88,7 +99,11 @@ export type Database = {
           image_url?: string | null
           is_breaking?: boolean | null
           is_featured?: boolean | null
+          keywords?: string[] | null
+          meta_description?: string | null
+          og_image?: string | null
           published_at?: string | null
+          seo_title?: string | null
           slug?: string
           title?: string
           updated_at?: string
