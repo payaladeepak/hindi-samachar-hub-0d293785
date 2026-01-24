@@ -16,6 +16,11 @@ export interface NewsArticle {
   created_at: string;
   updated_at: string;
   author_id: string | null;
+  seo_title: string | null;
+  meta_description: string | null;
+  keywords: string[] | null;
+  og_image: string | null;
+  canonical_url: string | null;
 }
 
 export function useNewsArticles(category?: NewsCategory) {
