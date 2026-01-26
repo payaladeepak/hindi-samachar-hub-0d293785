@@ -21,6 +21,7 @@ export interface NewsArticle {
   keywords: string[] | null;
   og_image: string | null;
   canonical_url: string | null;
+  view_count: number;
 }
 
 export function useNewsArticles(category?: NewsCategory) {

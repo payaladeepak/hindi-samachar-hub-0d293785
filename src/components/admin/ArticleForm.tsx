@@ -79,6 +79,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
           slug: generateSlug(formData.title),
           author_id: user?.id || null,
           published_at: new Date().toISOString(),
+          view_count: 0,
         });
         toast.success('खबर प्रकाशित हो गई');
       }

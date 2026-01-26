@@ -1,10 +1,11 @@
 import { useParams, Link } from 'react-router-dom';
 import { MainLayout } from '@/layouts/MainLayout';
 import { useNewsArticle, useNewsArticles } from '@/hooks/useNews';
+import { useTrackView, useLiveViewCount } from '@/hooks/useViewTracking';
 import { NEWS_CATEGORIES } from '@/lib/constants';
 import { NewsCard } from '@/components/news/NewsCard';
 import { SocialShareButtons } from '@/components/news/SocialShareButtons';
-import { Loader2, Clock, ArrowLeft } from 'lucide-react';
+import { Loader2, Clock, ArrowLeft, Eye } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { hi } from 'date-fns/locale';
 
@@ -12,6 +13,10 @@ export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: article, isLoading, error } = useNewsArticle(slug || '');
   const { data: relatedArticles } = useNewsArticles(article?.category);
+  const { data: liveViewCount } = useLiveViewCount(article?.id || '');
+  
+  // Track view when article is loaded
+  useTrackView(article?.id);
 
   if (isLoading) {
     return (
@@ -70,7 +75,7 @@ export default function ArticlePage() {
         </h1>
 
         {/* Meta */}
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6 flex-wrap">
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
             <span>
@@ -84,6 +89,11 @@ export default function ArticlePage() {
           <span>
             {format(new Date(article.published_at), 'dd MMMM yyyy, h:mm a', { locale: hi })}
           </span>
+          <span>•</span>
+          <div className="flex items-center gap-1 text-primary font-medium">
+            <Eye className="w-4 h-4" />
+            <span>{(liveViewCount ?? article.view_count ?? 0).toLocaleString('hi-IN')} व्यूज़</span>
+          </div>
         </div>
 
         {/* Featured Image */}
