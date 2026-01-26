@@ -1,6 +1,8 @@
 import { MainLayout } from '@/layouts/MainLayout';
 import { NewsGrid } from '@/components/news/NewsGrid';
 import { NewsCard } from '@/components/news/NewsCard';
+import { PopularArticles } from '@/components/news/PopularArticles';
+import { CategoryPopularityWidget } from '@/components/news/CategoryPopularityWidget';
 import { useNewsArticles, useFeaturedNews } from '@/hooks/useNews';
 import { NEWS_CATEGORIES } from '@/lib/constants';
 import { Loader2 } from 'lucide-react';
@@ -41,20 +43,26 @@ export default function Index() {
             )}
           </div>
 
-          {/* Side Articles */}
-          <div className="space-y-4">
-            <h3 className="font-bold text-lg border-b-2 border-primary pb-2">
-              ताज़ा खबरें
-            </h3>
-            {sideArticles.length > 0 ? (
-              sideArticles.map((article) => (
-                <NewsCard key={article.id} {...article} variant="compact" />
-              ))
-            ) : (
-              <p className="text-muted-foreground text-sm py-4">
-                अभी कोई खबर नहीं है
-              </p>
-            )}
+          {/* Side Articles & Popular */}
+          <div className="space-y-6">
+            {/* Popular Articles - Live Tracking */}
+            <PopularArticles />
+            
+            {/* Latest Articles */}
+            <div className="space-y-4">
+              <h3 className="font-bold text-lg border-b-2 border-primary pb-2">
+                ताज़ा खबरें
+              </h3>
+              {sideArticles.length > 0 ? (
+                sideArticles.map((article) => (
+                  <NewsCard key={article.id} {...article} variant="compact" />
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm py-4">
+                  अभी कोई खबर नहीं है
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </section>

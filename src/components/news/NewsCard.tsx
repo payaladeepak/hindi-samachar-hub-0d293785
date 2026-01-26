@@ -13,6 +13,7 @@ interface NewsCardProps {
   image_url: string | null;
   published_at: string;
   is_breaking?: boolean;
+  view_count?: number;
   variant?: 'default' | 'featured' | 'compact';
 }
 
@@ -24,6 +25,7 @@ export function NewsCard({
   image_url,
   published_at,
   is_breaking,
+  view_count = 0,
   variant = 'default',
 }: NewsCardProps) {
   const categoryInfo = NEWS_CATEGORIES[category];
@@ -74,9 +76,15 @@ export function NewsCard({
               <p className="text-white/80 line-clamp-2 mb-3">{excerpt}</p>
             )}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-white/70">
-                <Clock className="w-4 h-4" />
-                <span>{timeAgo}</span>
+              <div className="flex items-center gap-4 text-sm text-white/70">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{timeAgo}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Eye className="w-4 h-4" />
+                  <span>{view_count.toLocaleString('hi-IN')}</span>
+                </div>
               </div>
               <span className="flex items-center gap-1 text-sm text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                 पढ़ें <ArrowRight className="w-4 h-4" />
@@ -108,9 +116,16 @@ export function NewsCard({
             <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {title}
             </h3>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-              <Clock className="w-3 h-3" />
-              <span>{timeAgo}</span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                <span>{timeAgo}</span>
+              </div>
+              <span>•</span>
+              <div className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                <span>{view_count.toLocaleString('hi-IN')}</span>
+              </div>
             </div>
           </div>
           <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-300 self-center flex-shrink-0 transform translate-x-[-4px] group-hover:translate-x-0" />
@@ -162,9 +177,15 @@ export function NewsCard({
             <p className="text-muted-foreground text-sm line-clamp-2 mb-3 group-hover:text-foreground/80 transition-colors duration-300">{excerpt}</p>
           )}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span>{timeAgo}</span>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                <span>{timeAgo}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                <span>{view_count.toLocaleString('hi-IN')}</span>
+              </div>
             </div>
           </div>
         </div>
