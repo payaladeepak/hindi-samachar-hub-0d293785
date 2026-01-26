@@ -10,13 +10,14 @@ export interface UserWithRole {
   created_at: string;
   role: AppRole | null;
   role_id: string | null;
+  last_sign_in?: string | null;
 }
 
 export function useUsers() {
   return useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      // Get all users from auth (via profiles or user_roles)
+      // Get all user roles
       const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
         .select('*')
@@ -31,29 +32,29 @@ export function useUsers() {
 
       if (profilesError) throw profilesError;
 
-      // Combine data - user_roles contains user_id, profiles contains user info
+      // Combine data
       const usersMap = new Map<string, UserWithRole>();
 
-      // Add users from roles
+      // Add users from roles first (they have explicit roles)
       roles?.forEach((role) => {
         usersMap.set(role.user_id, {
           id: role.user_id,
-          email: '', // Will be filled from profiles if available
+          email: '',
           created_at: role.created_at,
           role: role.role,
           role_id: role.id,
         });
       });
 
-      // Add profile info
+      // Add/update with profile info
       profiles?.forEach((profile) => {
         const existing = usersMap.get(profile.user_id);
         if (existing) {
-          existing.email = profile.display_name || profile.user_id;
+          existing.email = profile.display_name || profile.user_id.slice(0, 8);
         } else {
           usersMap.set(profile.user_id, {
             id: profile.user_id,
-            email: profile.display_name || profile.user_id,
+            email: profile.display_name || profile.user_id.slice(0, 8),
             created_at: profile.created_at,
             role: null,
             role_id: null,
@@ -103,6 +104,23 @@ export function useDeleteUserRole() {
         .from('user_roles')
         .delete()
         .eq('id', roleId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+
+export function useAssignRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
+      const { error } = await supabase
+        .from('user_roles')
+        .insert({ user_id: userId, role });
 
       if (error) throw error;
     },
