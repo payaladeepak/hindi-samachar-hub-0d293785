@@ -45,6 +45,30 @@ export function useNewsArticles(category?: NewsCategory) {
   });
 }
 
+// Fetch articles for admin panel - admins see all, editors see only their own
+export function useAdminArticles(userId: string | undefined, isAdmin: boolean) {
+  return useQuery({
+    queryKey: ['news', 'admin', userId, isAdmin],
+    queryFn: async () => {
+      let query = supabase
+        .from('news_articles')
+        .select('*')
+        .order('published_at', { ascending: false });
+      
+      // Editors only see their own articles
+      if (!isAdmin && userId) {
+        query = query.eq('author_id', userId);
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      return data as NewsArticle[];
+    },
+    enabled: !!userId,
+  });
+}
+
 export function useBreakingNews() {
   return useQuery({
     queryKey: ['news', 'breaking'],

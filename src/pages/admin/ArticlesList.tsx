@@ -1,12 +1,13 @@
 import { AdminLayout } from '@/layouts/AdminLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { useNewsArticles, useDeleteArticle } from '@/hooks/useNews';
+import { useAdminArticles, useDeleteArticle } from '@/hooks/useNews';
+import { useAuth } from '@/hooks/useAuth';
 import { NEWS_CATEGORIES } from '@/lib/constants';
 import { Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Loader2, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, ExternalLink, Shield, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { hi } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -23,7 +24,8 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export default function ArticlesList() {
-  const { data: articles, isLoading } = useNewsArticles();
+  const { user, isAdmin, isEditor } = useAuth();
+  const { data: articles, isLoading } = useAdminArticles(user?.id, isAdmin);
   const deleteArticle = useDeleteArticle();
 
   const handleDelete = async (id: string) => {
@@ -35,13 +37,30 @@ export default function ArticlesList() {
     }
   };
 
+  // Check if user can edit/delete this article
+  const canModifyArticle = (authorId: string | null) => {
+    return isAdmin || (isEditor && authorId === user?.id);
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">सभी खबरें</h1>
-            <p className="text-muted-foreground">यहाँ आपकी सभी प्रकाशित खबरें हैं</p>
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">
+                {isAdmin ? 'सभी खबरें' : 'मेरी खबरें'}
+              </h1>
+              <Badge variant={isAdmin ? 'default' : 'secondary'} className="flex items-center gap-1">
+                {isAdmin ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                {isAdmin ? 'Admin' : 'Editor'}
+              </Badge>
+            </div>
+            <p className="text-muted-foreground">
+              {isAdmin 
+                ? 'आप सभी खबरों को देख और संपादित कर सकते हैं' 
+                : 'आप केवल अपनी खबरों को देख और संपादित कर सकते हैं'}
+            </p>
           </div>
           <Link to="/admin/articles/new">
             <Button>
@@ -54,6 +73,9 @@ export default function ArticlesList() {
         <Card>
           <CardHeader>
             <CardTitle>खबरों की सूची</CardTitle>
+            <CardDescription>
+              कुल {articles?.length || 0} खबरें
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -104,35 +126,39 @@ export default function ArticlesList() {
                               <ExternalLink className="w-4 h-4" />
                             </Button>
                           </Link>
-                          <Link to={`/admin/articles/${article.id}/edit`}>
-                            <Button variant="ghost" size="icon">
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          </Link>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="text-destructive">
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>क्या आप सुनिश्चित हैं?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  यह क्रिया पूर्ववत नहीं की जा सकती। यह खबर स्थायी रूप से हटा दी जाएगी।
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>रद्द करें</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(article.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  हटाएं
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          {canModifyArticle(article.author_id) && (
+                            <>
+                              <Link to={`/admin/articles/${article.id}/edit`}>
+                                <Button variant="ghost" size="icon">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                              </Link>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="text-destructive">
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>क्या आप सुनिश्चित हैं?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      यह क्रिया पूर्ववत नहीं की जा सकती। यह खबर स्थायी रूप से हटा दी जाएगी।
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>रद्द करें</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDelete(article.id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      हटाएं
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
