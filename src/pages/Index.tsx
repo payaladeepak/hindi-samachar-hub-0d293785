@@ -1,6 +1,7 @@
 import { MainLayout } from '@/layouts/MainLayout';
 import { NewsGrid } from '@/components/news/NewsGrid';
 import { NewsCard } from '@/components/news/NewsCard';
+import { FlipSlider } from '@/components/news/FlipSlider';
 import { PopularArticles } from '@/components/news/PopularArticles';
 import { CategoryPopularityWidget } from '@/components/news/CategoryPopularityWidget';
 import { useNewsArticles, useFeaturedNews } from '@/hooks/useNews';
@@ -24,23 +25,18 @@ export default function Index() {
 
   const latestArticles = articles?.slice(0, 6) || [];
   const sideArticles = articles?.slice(6, 10) || [];
+  
+  // Get top articles for the flip slider (featured + breaking + top viewed)
+  const sliderArticles = articles?.slice(0, 5) || [];
 
   return (
     <MainLayout>
-      {/* Hero Section */}
+      {/* Hero Section with Flip Slider */}
       <section className="mb-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Featured Article */}
+          {/* Flip Slider */}
           <div className="lg:col-span-2">
-            {featuredArticle ? (
-              <NewsCard {...featuredArticle} variant="featured" />
-            ) : latestArticles[0] ? (
-              <NewsCard {...latestArticles[0]} variant="featured" />
-            ) : (
-              <div className="h-[400px] bg-muted rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">कोई फीचर्ड खबर नहीं है</p>
-              </div>
-            )}
+            <FlipSlider articles={sliderArticles} autoPlay interval={5000} />
           </div>
 
           {/* Side Articles & Popular */}
