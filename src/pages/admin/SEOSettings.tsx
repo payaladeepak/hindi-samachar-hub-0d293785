@@ -7,10 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Search, Globe, FileText, Link2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { Search, Globe, FileText, Link2, CheckCircle, AlertCircle, ExternalLink, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function SEOSettings() {
+  const { isAdmin } = useAuth();
+  
   const [siteSettings, setSiteSettings] = useState({
     siteName: 'ताज़ा खबर',
     siteDescription: 'भारत की सबसे विश्वसनीय हिंदी समाचार वेबसाइट',
@@ -24,6 +27,28 @@ export default function SEOSettings() {
     // In a real app, this would save to database
     toast.success('SEO सेटिंग्स सहेजी गईं');
   };
+
+  // Only admins can access global SEO settings
+  if (!isAdmin) {
+    return (
+      <AdminLayout>
+        <Card className="max-w-lg mx-auto mt-12">
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <ShieldAlert className="w-16 h-16 mx-auto text-destructive" />
+              <h2 className="text-2xl font-bold">Access Denied</h2>
+              <p className="text-muted-foreground">
+                केवल Admin ही वैश्विक SEO सेटिंग्स प्रबंधित कर सकते हैं।
+              </p>
+              <p className="text-sm text-muted-foreground">
+                आप अपनी खबरों का SEO "खबर संपादित करें" पेज से प्रबंधित कर सकते हैं।
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
