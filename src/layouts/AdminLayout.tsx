@@ -16,10 +16,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
+    if (!loading) {
+      if (!user) {
+        navigate('/auth');
+      } else if (!isEditor) {
+        // Regular users can't access admin panel - redirect to home
+        navigate('/');
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isEditor, navigate]);
 
   // Close sidebar on route change for mobile
   useEffect(() => {
@@ -34,7 +39,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
-  if (!user) {
+  if (!user || !isEditor) {
     return null;
   }
 

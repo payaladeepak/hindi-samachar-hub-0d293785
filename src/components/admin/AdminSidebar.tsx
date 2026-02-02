@@ -18,14 +18,19 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
-const navItems = [
-  { icon: LayoutDashboard, label: 'डैशबोर्ड', href: '/admin' },
-  { icon: FileText, label: 'सभी खबरें', href: '/admin/articles' },
-  { icon: PlusCircle, label: 'नई खबर', href: '/admin/articles/new' },
-  { icon: FolderOpen, label: 'श्रेणियां', href: '/admin/categories' },
-  { icon: Users, label: 'यूजर प्रबंधन', href: '/admin/users' },
-  { icon: Search, label: 'SEO सेटिंग्स', href: '/admin/seo' },
-];
+// Navigation items - some are admin-only
+const getNavItems = (isAdmin: boolean) => {
+  const items = [
+    { icon: LayoutDashboard, label: 'डैशबोर्ड', href: '/admin', adminOnly: false },
+    { icon: FileText, label: 'सभी खबरें', href: '/admin/articles', adminOnly: false },
+    { icon: PlusCircle, label: 'नई खबर', href: '/admin/articles/new', adminOnly: false },
+    { icon: FolderOpen, label: 'श्रेणियां', href: '/admin/categories', adminOnly: true },
+    { icon: Users, label: 'यूजर प्रबंधन', href: '/admin/users', adminOnly: true },
+    { icon: Search, label: 'SEO सेटिंग्स', href: '/admin/seo', adminOnly: true },
+  ];
+  
+  return isAdmin ? items : items.filter(item => !item.adminOnly);
+};
 
 interface AdminSidebarProps {
   isMobileOpen: boolean;
@@ -36,7 +41,9 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ isMobileOpen, isCollapsed, onMobileClose, onToggleCollapse }: AdminSidebarProps) {
   const location = useLocation();
-  const { signOut, user } = useAuth();
+  const { signOut, user, isAdmin } = useAuth();
+  
+  const navItems = getNavItems(isAdmin);
 
   return (
     <>

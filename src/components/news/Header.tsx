@@ -25,7 +25,7 @@ export function Header() {
             {user ? (
               <>
                 {isEditor && (
-                  <Link to="/admin" className="hover:text-primary transition-colors">
+                  <Link to="/admin" className="hover:text-primary transition-colors font-medium">
                     एडमिन पैनल
                   </Link>
                 )}
@@ -34,7 +34,7 @@ export function Header() {
                 </button>
               </>
             ) : (
-              <Link to="/auth" className="hover:text-primary transition-colors">
+              <Link to="/auth" className="hover:text-primary transition-colors font-medium">
                 लॉग इन
               </Link>
             )}
@@ -83,7 +83,7 @@ export function Header() {
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
-            <Link to={user ? '/admin' : '/auth'}>
+            <Link to={user && isEditor ? '/admin' : '/auth'}>
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>

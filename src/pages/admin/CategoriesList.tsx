@@ -31,7 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Pencil, Trash2, Loader2, GripVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, GripVertical, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   useCategories,
@@ -40,6 +40,7 @@ import {
   useDeleteCategory,
   type Category,
 } from '@/hooks/useCategories';
+import { useAuth } from '@/hooks/useAuth';
 
 const COLOR_OPTIONS = [
   { value: 'bg-blue-600', label: 'नीला' },
@@ -71,6 +72,7 @@ const initialFormData: CategoryFormData = {
 };
 
 export default function CategoriesList() {
+  const { isAdmin } = useAuth();
   const { data: categories, isLoading } = useCategories();
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
@@ -79,6 +81,22 @@ export default function CategoriesList() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState<CategoryFormData>(initialFormData);
+
+  // Only admins can access this page
+  if (!isAdmin) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+          <XCircle className="w-16 h-16 text-destructive" />
+          <h2 className="text-xl font-semibold">पहुंच अस्वीकृत</h2>
+          <p className="text-muted-foreground text-center">
+            आपके पास श्रेणियां प्रबंधित करने की अनुमति नहीं है।<br />
+            केवल एडमिन ही श्रेणियां बना, संपादित और हटा सकते हैं।
+          </p>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   const handleOpenCreate = () => {
     setEditingCategory(null);
