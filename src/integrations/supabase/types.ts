@@ -65,6 +65,7 @@ export type Database = {
           published_at: string | null
           seo_title: string | null
           slug: string
+          status: Database["public"]["Enums"]["article_status"]
           title: string
           updated_at: string
           view_count: number
@@ -86,6 +87,7 @@ export type Database = {
           published_at?: string | null
           seo_title?: string | null
           slug: string
+          status?: Database["public"]["Enums"]["article_status"]
           title: string
           updated_at?: string
           view_count?: number
@@ -107,6 +109,7 @@ export type Database = {
           published_at?: string | null
           seo_title?: string | null
           slug?: string
+          status?: Database["public"]["Enums"]["article_status"]
           title?: string
           updated_at?: string
           view_count?: number
@@ -177,6 +180,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "user"
+      article_status: "draft" | "pending_review" | "published"
       news_category:
         | "politics"
         | "sports"
@@ -314,6 +318,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "user"],
+      article_status: ["draft", "pending_review", "published"],
       news_category: [
         "politics",
         "sports",

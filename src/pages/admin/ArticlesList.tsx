@@ -3,11 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { useAdminArticles, useDeleteArticle } from '@/hooks/useNews';
+import { useAdminArticles, useDeleteArticle, useUpdateArticle } from '@/hooks/useNews';
 import { useAuth } from '@/hooks/useAuth';
-import { NEWS_CATEGORIES } from '@/lib/constants';
+import { NEWS_CATEGORIES, ARTICLE_STATUS } from '@/lib/constants';
 import { Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Loader2, ExternalLink, Shield, User } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, ExternalLink, Shield, User, CheckCircle, Clock, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { hi } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -27,6 +27,7 @@ export default function ArticlesList() {
   const { user, isAdmin, isEditor } = useAuth();
   const { data: articles, isLoading } = useAdminArticles(user?.id, isAdmin);
   const deleteArticle = useDeleteArticle();
+  const updateArticle = useUpdateArticle();
 
   const handleDelete = async (id: string) => {
     try {
@@ -37,9 +38,31 @@ export default function ArticlesList() {
     }
   };
 
+  const handleApprove = async (id: string) => {
+    try {
+      await updateArticle.mutateAsync({
+        id,
+        status: 'published',
+        published_at: new Date().toISOString(),
+      });
+      toast.success('खबर प्रकाशित हो गई');
+    } catch (error: any) {
+      toast.error(error.message || 'खबर प्रकाशित करने में त्रुटि');
+    }
+  };
+
   // Check if user can edit/delete this article
   const canModifyArticle = (authorId: string | null) => {
     return isAdmin || (isEditor && authorId === user?.id);
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'draft': return <FileText className="w-3 h-3" />;
+      case 'pending_review': return <Clock className="w-3 h-3" />;
+      case 'published': return <CheckCircle className="w-3 h-3" />;
+      default: return null;
+    }
   };
 
   return (
@@ -89,6 +112,7 @@ export default function ArticlesList() {
                     <TableHead>शीर्षक</TableHead>
                     <TableHead>श्रेणी</TableHead>
                     <TableHead>स्थिति</TableHead>
+                    <TableHead>प्रकाशन स्थिति</TableHead>
                     <TableHead>तारीख</TableHead>
                     <TableHead className="text-right">कार्रवाई</TableHead>
                   </TableRow>
@@ -116,26 +140,48 @@ export default function ArticlesList() {
                           )}
                         </div>
                       </TableCell>
+                      <TableCell>
+                        <Badge className={`flex items-center gap-1 ${ARTICLE_STATUS[article.status]?.color || 'bg-muted'}`}>
+                          {getStatusIcon(article.status)}
+                          {ARTICLE_STATUS[article.status]?.label || article.status}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {format(new Date(article.published_at), 'dd MMM yyyy', { locale: hi })}
+                        {article.published_at 
+                          ? format(new Date(article.published_at), 'dd MMM yyyy', { locale: hi })
+                          : '-'}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Link to={`/news/${article.slug}`} target="_blank">
-                            <Button variant="ghost" size="icon">
-                              <ExternalLink className="w-4 h-4" />
+                          {/* Approve button - only for admins on pending_review articles */}
+                          {isAdmin && article.status === 'pending_review' && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-success hover:text-success"
+                              onClick={() => handleApprove(article.id)}
+                              title="प्रकाशित करें"
+                            >
+                              <CheckCircle className="w-4 h-4" />
                             </Button>
-                          </Link>
+                          )}
+                          {article.status === 'published' && (
+                            <Link to={`/news/${article.slug}`} target="_blank">
+                              <Button variant="ghost" size="icon" title="देखें">
+                                <ExternalLink className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                          )}
                           {canModifyArticle(article.author_id) && (
                             <>
                               <Link to={`/admin/articles/${article.id}/edit`}>
-                                <Button variant="ghost" size="icon">
+                                <Button variant="ghost" size="icon" title="संपादित करें">
                                   <Edit className="w-4 h-4" />
                                 </Button>
                               </Link>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="text-destructive">
+                                  <Button variant="ghost" size="icon" className="text-destructive" title="हटाएं">
                                     <Trash2 className="w-4 h-4" />
                                   </Button>
                                 </AlertDialogTrigger>

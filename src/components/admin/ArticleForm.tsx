@@ -8,11 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
+import { NEWS_CATEGORIES, ARTICLE_STATUS, type NewsCategory, type ArticleStatus } from '@/lib/constants';
 import { useCreateArticle, useUpdateArticle, type NewsArticle } from '@/hooks/useNews';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, ChevronDown } from 'lucide-react';
+import { Loader2, ChevronDown, Save, Send, CheckCircle } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { SEOFields } from './SEOFields';
 
@@ -36,7 +36,7 @@ function generateSlug(title: string): string {
 
 export function ArticleForm({ article }: ArticleFormProps) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const createArticle = useCreateArticle();
   const updateArticle = useUpdateArticle();
   const [seoOpen, setSeoOpen] = useState(false);
@@ -49,6 +49,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
     image_url: article?.image_url || '',
     is_breaking: article?.is_breaking || false,
     is_featured: article?.is_featured || false,
+    status: article?.status || 'draft' as ArticleStatus,
     seo_title: article?.seo_title || '',
     meta_description: article?.meta_description || '',
     keywords: article?.keywords || [] as string[],
@@ -58,7 +59,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
   const isLoading = createArticle.isPending || updateArticle.isPending;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, targetStatus?: ArticleStatus) => {
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.content.trim()) {
@@ -66,22 +67,28 @@ export function ArticleForm({ article }: ArticleFormProps) {
       return;
     }
 
+    const statusToSave = targetStatus || formData.status;
+
     try {
       if (article) {
         await updateArticle.mutateAsync({
           id: article.id,
           ...formData,
+          status: statusToSave,
         });
-        toast.success('खबर अपडेट हो गई');
+        const statusLabel = ARTICLE_STATUS[statusToSave].label;
+        toast.success(`खबर ${statusLabel} के रूप में सहेजी गई`);
       } else {
         await createArticle.mutateAsync({
           ...formData,
+          status: statusToSave,
           slug: generateSlug(formData.title),
           author_id: user?.id || null,
-          published_at: new Date().toISOString(),
+          published_at: statusToSave === 'published' ? new Date().toISOString() : null,
           view_count: 0,
         });
-        toast.success('खबर प्रकाशित हो गई');
+        const statusLabel = ARTICLE_STATUS[statusToSave].label;
+        toast.success(`खबर ${statusLabel} के रूप में सहेजी गई`);
       }
       navigate('/admin/articles');
     } catch (error: any) {
@@ -212,12 +219,47 @@ export function ArticleForm({ article }: ArticleFormProps) {
       </Collapsible>
 
       {/* Actions */}
-      <div className="flex gap-4">
-        <Button type="submit" disabled={isLoading} className="min-w-32">
+      <div className="flex flex-wrap gap-3">
+        {/* Save as Draft - available to everyone */}
+        <Button 
+          type="button" 
+          variant="outline" 
+          disabled={isLoading}
+          onClick={(e) => handleSubmit(e, 'draft')}
+        >
           {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          {article ? 'अपडेट करें' : 'प्रकाशित करें'}
+          <Save className="w-4 h-4 mr-2" />
+          ड्राफ्ट सहेजें
         </Button>
-        <Button type="button" variant="outline" onClick={() => navigate('/admin/articles')}>
+
+        {/* Submit for Review - for editors (non-admins) */}
+        {!isAdmin && (
+          <Button 
+            type="button" 
+            disabled={isLoading}
+            onClick={(e) => handleSubmit(e, 'pending_review')}
+          >
+            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            <Send className="w-4 h-4 mr-2" />
+            समीक्षा के लिए भेजें
+          </Button>
+        )}
+
+        {/* Publish - only for admins */}
+        {isAdmin && (
+          <Button 
+            type="button" 
+            disabled={isLoading}
+            onClick={(e) => handleSubmit(e, 'published')}
+            className="bg-success hover:bg-success/90"
+          >
+            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            <CheckCircle className="w-4 h-4 mr-2" />
+            प्रकाशित करें
+          </Button>
+        )}
+
+        <Button type="button" variant="ghost" onClick={() => navigate('/admin/articles')}>
           रद्द करें
         </Button>
       </div>

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { NewsCategory } from '@/lib/constants';
+import type { NewsCategory, ArticleStatus } from '@/lib/constants';
 
 export interface NewsArticle {
   id: string;
@@ -22,6 +22,7 @@ export interface NewsArticle {
   og_image: string | null;
   canonical_url: string | null;
   view_count: number;
+  status: ArticleStatus;
 }
 
 export function useNewsArticles(category?: NewsCategory) {
@@ -31,6 +32,7 @@ export function useNewsArticles(category?: NewsCategory) {
       let query = supabase
         .from('news_articles')
         .select('*')
+        .eq('status', 'published')
         .order('published_at', { ascending: false });
       
       if (category) {
@@ -77,6 +79,7 @@ export function useBreakingNews() {
         .from('news_articles')
         .select('*')
         .eq('is_breaking', true)
+        .eq('status', 'published')
         .order('published_at', { ascending: false })
         .limit(5);
       
@@ -94,6 +97,7 @@ export function useFeaturedNews() {
         .from('news_articles')
         .select('*')
         .eq('is_featured', true)
+        .eq('status', 'published')
         .order('published_at', { ascending: false })
         .limit(1);
       

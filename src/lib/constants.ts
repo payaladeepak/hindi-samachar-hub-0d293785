@@ -12,5 +12,14 @@ export const NEWS_CATEGORIES = {
 
 export type NewsCategory = keyof typeof NEWS_CATEGORIES;
 
+// Article Status with Hindi labels
+export const ARTICLE_STATUS = {
+  draft: { label: 'ड्राफ्ट', color: 'bg-muted text-muted-foreground' },
+  pending_review: { label: 'समीक्षा हेतु', color: 'bg-warning text-warning-foreground' },
+  published: { label: 'प्रकाशित', color: 'bg-success text-success-foreground' },
+} as const;
+
+export type ArticleStatus = keyof typeof ARTICLE_STATUS;
+
 export const SITE_NAME = 'ताज़ा खबर';
 export const SITE_TAGLINE = 'सच की आवाज़';
