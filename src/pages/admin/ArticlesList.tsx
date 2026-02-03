@@ -110,6 +110,7 @@ export default function ArticlesList() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>शीर्षक</TableHead>
+                    <TableHead>लेखक</TableHead>
                     <TableHead>श्रेणी</TableHead>
                     <TableHead>स्थिति</TableHead>
                     <TableHead>प्रकाशन स्थिति</TableHead>
@@ -122,6 +123,9 @@ export default function ArticlesList() {
                     <TableRow key={article.id}>
                       <TableCell className="font-medium max-w-[300px]">
                         <p className="line-clamp-2">{article.title}</p>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {article.author_name || <span className="text-muted-foreground">-</span>}
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary">
