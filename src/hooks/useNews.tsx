@@ -47,6 +47,11 @@ export function useNewsArticles(category?: NewsCategory) {
   });
 }
 
+// Extended type for admin articles with author info
+export interface AdminNewsArticle extends NewsArticle {
+  author_name?: string | null;
+}
+
 // Fetch articles for admin panel - admins see all, editors see only their own
 export function useAdminArticles(userId: string | undefined, isAdmin: boolean) {
   return useQuery({
@@ -62,10 +67,33 @@ export function useAdminArticles(userId: string | undefined, isAdmin: boolean) {
         query = query.eq('author_id', userId);
       }
       
-      const { data, error } = await query;
+      const { data: articles, error } = await query;
       
       if (error) throw error;
-      return data as NewsArticle[];
+      
+      // Fetch author names for all unique author_ids
+      const authorIds = [...new Set(articles?.filter(a => a.author_id).map(a => a.author_id) || [])];
+      
+      let authorMap: Record<string, string> = {};
+      if (authorIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', authorIds);
+        
+        if (profiles) {
+          authorMap = profiles.reduce((acc, p) => {
+            acc[p.user_id] = p.display_name || 'अज्ञात';
+            return acc;
+          }, {} as Record<string, string>);
+        }
+      }
+      
+      // Merge author names into articles
+      return (articles || []).map(article => ({
+        ...article,
+        author_name: article.author_id ? authorMap[article.author_id] || 'अज्ञात' : null,
+      })) as AdminNewsArticle[];
     },
     enabled: !!userId,
   });
