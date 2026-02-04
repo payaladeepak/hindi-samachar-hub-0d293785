@@ -11,7 +11,7 @@ export function SocialShareButtons({ title, url }: SocialShareButtonsProps) {
   const encodedTitle = encodeURIComponent(title);
 
   const shareLinks = {
-    whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+    whatsapp: `https://wa.me/919389535427?text=${encodedTitle}%20${encodedUrl}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
     twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
   };
