@@ -24,6 +24,9 @@ export function Header() {
           <div className="flex items-center gap-4">
             {user ? (
               <>
+                <Link to="/profile" className="hover:text-primary transition-colors">
+                  प्रोफ़ाइल
+                </Link>
                 {isEditor && (
                   <Link to="/admin" className="hover:text-primary transition-colors font-medium">
                     एडमिन पैनल
@@ -83,7 +86,7 @@ export function Header() {
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
-            <Link to={user && isEditor ? '/admin' : '/auth'}>
+            <Link to={user ? '/profile' : '/auth'}>
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>

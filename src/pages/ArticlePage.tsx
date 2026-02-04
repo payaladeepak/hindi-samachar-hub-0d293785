@@ -5,6 +5,7 @@ import { useTrackView, useLiveViewCount } from '@/hooks/useViewTracking';
 import { NEWS_CATEGORIES } from '@/lib/constants';
 import { NewsCard } from '@/components/news/NewsCard';
 import { SocialShareButtons } from '@/components/news/SocialShareButtons';
+import { AuthorBio } from '@/components/news/AuthorBio';
 import { Loader2, Clock, ArrowLeft, Eye } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { hi } from 'date-fns/locale';
@@ -138,6 +139,9 @@ export default function ArticlePage() {
             url={window.location.href} 
           />
         </div>
+
+        {/* Author Bio */}
+        <AuthorBio authorId={article.author_id} />
       </article>
 
       {/* Related Articles */}
