@@ -32,34 +32,36 @@ export default function Index() {
   return (
     <MainLayout>
       {/* Hero Section with Flip Slider */}
-      <section className="mb-12">
+      <section className="mb-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Flip Slider */}
           <div className="lg:col-span-2">
             <FlipSlider articles={sliderArticles} autoPlay interval={5000} />
           </div>
 
-          {/* Side Articles & Popular */}
-          <div className="space-y-6">
-            {/* Popular Articles - Live Tracking */}
-            <PopularArticles />
-            
-            {/* Latest Articles */}
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg border-b-2 border-primary pb-2">
-                ताज़ा खबरें
-              </h3>
-              {sideArticles.length > 0 ? (
-                sideArticles.map((article) => (
-                  <NewsCard key={article.id} {...article} variant="compact" />
-                ))
-              ) : (
-                <p className="text-muted-foreground text-sm py-4">
-                  अभी कोई खबर नहीं है
-                </p>
-              )}
-            </div>
+          {/* Side Articles */}
+          <div className="space-y-4">
+            <h3 className="font-bold text-lg border-b-2 border-primary pb-2">
+              ताज़ा खबरें
+            </h3>
+            {sideArticles.length > 0 ? (
+              sideArticles.map((article) => (
+                <NewsCard key={article.id} {...article} variant="compact" />
+              ))
+            ) : (
+              <p className="text-muted-foreground text-sm py-4">
+                अभी कोई खबर नहीं है
+              </p>
+            )}
           </div>
+        </div>
+      </section>
+
+      {/* Second Layer - Popular Articles with Live Tracking */}
+      <section className="mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <PopularArticles />
+          <CategoryPopularityWidget />
         </div>
       </section>
 
