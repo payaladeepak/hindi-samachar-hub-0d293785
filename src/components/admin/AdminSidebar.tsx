@@ -143,6 +143,17 @@ export function AdminSidebar({ isMobileOpen, isCollapsed, onMobileClose, onToggl
         {/* Footer */}
         <div className="p-3 border-t border-sidebar-border space-y-1">
           <Link
+            to="/profile"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors",
+              isCollapsed && "lg:justify-center lg:px-2"
+            )}
+            title={isCollapsed ? "प्रोफ़ाइल" : undefined}
+          >
+            <Settings className="w-5 h-5 flex-shrink-0" />
+            <span className={cn(isCollapsed && "lg:hidden")}>प्रोफ़ाइल</span>
+          </Link>
+          <Link
             to="/"
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors",

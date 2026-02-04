@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import CategoryPage from "./pages/CategoryPage";
 import ArticlePage from "./pages/ArticlePage";
 import AuthPage from "./pages/AuthPage";
+import ProfilePage from "./pages/ProfilePage";
 import Dashboard from "./pages/admin/Dashboard";
 import ArticlesList from "./pages/admin/ArticlesList";
 import NewArticle from "./pages/admin/NewArticle";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/category/:category" element={<CategoryPage />} />
             <Route path="/news/:slug" element={<ArticlePage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/articles" element={<ArticlesList />} />
             <Route path="/admin/articles/new" element={<NewArticle />} />
