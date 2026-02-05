@@ -1,73 +1,216 @@
-# Welcome to your Lovable project
+# हिंदी न्यूज़ पोर्टल (Hindi News Portal)
 
-## Project info
+A full-featured Hindi news portal built with React, TypeScript, and Lovable Cloud (Supabase).
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Project Overview
 
-## How can I edit this code?
+This is a complete news management system with:
+- **Public News Portal**: Breaking news, featured articles, category-based browsing
+- **Admin Dashboard**: Article management, user management, SEO settings
+- **Role-based Access**: Admin, Editor, and User roles
+- **Social Sharing**: WhatsApp, Facebook, Twitter, Instagram integration
 
-There are several ways of editing your application.
+## 🛠️ Technology Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **Backend**: Lovable Cloud (Supabase PostgreSQL)
+- **Authentication**: Supabase Auth
+- **State Management**: TanStack Query (React Query)
+- **Routing**: React Router v6
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 📊 Database Schema
 
-Changes made via Lovable will be committed automatically to this repo.
+### Tables
 
-**Use your preferred IDE**
+#### 1. `news_articles`
+Main table for storing news articles.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| title | TEXT | Article title |
+| slug | TEXT | URL-friendly slug (unique) |
+| excerpt | TEXT | Short summary |
+| content | TEXT | Full article content |
+| category | ENUM | politics, sports, entertainment, national, international, business, technology, health |
+| image_url | TEXT | Featured image URL |
+| is_breaking | BOOLEAN | Breaking news flag |
+| is_featured | BOOLEAN | Featured article flag |
+| status | ENUM | draft, pending_review, published |
+| author_id | UUID | Reference to user |
+| view_count | INTEGER | Article views |
+| seo_title | TEXT | SEO meta title |
+| meta_description | TEXT | SEO meta description |
+| keywords | TEXT[] | SEO keywords array |
+| og_image | TEXT | Open Graph image |
+| canonical_url | TEXT | Canonical URL |
+| published_at | TIMESTAMP | Publish date |
+| created_at | TIMESTAMP | Creation date |
+| updated_at | TIMESTAMP | Last update date |
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+#### 2. `categories`
+Dynamic categories management.
 
-Follow these steps:
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| name | TEXT | Category identifier |
+| label | TEXT | Display label (Hindi) |
+| color | TEXT | Tailwind color class |
+| sort_order | INTEGER | Display order |
+| is_active | BOOLEAN | Active status |
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+#### 3. `profiles`
+User profile information.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| user_id | UUID | Auth user reference |
+| display_name | TEXT | User display name |
+| avatar_url | TEXT | Profile picture URL |
+| bio | TEXT | User biography |
 
-# Step 3: Install the necessary dependencies.
-npm i
+#### 4. `user_roles`
+Role-based access control.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| user_id | UUID | Auth user reference |
+| role | ENUM | admin, editor, user |
+
+### Database Functions
+
+- `has_role(user_id, role)`: Check if user has specific role
+- `increment_view_count(article_id)`: Increment article view count
+- `handle_new_user_role()`: Auto-assign 'user' role on signup
+- `update_updated_at_column()`: Auto-update timestamp trigger
+
+## 🔐 Row Level Security (RLS)
+
+All tables have RLS enabled with these policies:
+
+### news_articles
+- **Public**: Can view published articles
+- **Editors**: Can CRUD their own articles
+- **Admins**: Can CRUD all articles
+
+### categories
+- **Public**: Can view all categories
+- **Admins**: Can CRUD categories
+
+### profiles
+- **Public**: Can view all profiles
+- **Users**: Can update their own profile
+
+### user_roles
+- **Users**: Can view their own roles
+- **Admins**: Can manage all roles
+
+## 📁 Storage Buckets
+
+| Bucket | Public | Purpose |
+|--------|--------|---------|
+| news-images | Yes | Article images, avatars |
+
+## 🔑 Environment Variables
+
+The following environment variables are automatically configured by Lovable Cloud:
+
+```env
+VITE_SUPABASE_URL=https://ggomyknrddklqffmaajj.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<anon_key>
+VITE_SUPABASE_PROJECT_ID=ggomyknrddklqffmaajj
 ```
 
-**Edit a file directly in GitHub**
+## 👥 User Roles & Permissions
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Role | Permissions |
+|------|-------------|
+| **Admin** | Full access to all features, user management, category management |
+| **Editor** | Create/edit/delete own articles, view dashboard |
+| **User** | View published articles, manage own profile |
 
-**Use GitHub Codespaces**
+## 📱 Features
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Public Pages
+- **Home**: Breaking news ticker, featured article slider, category grids
+- **Category Pages**: Filtered news by category
+- **Article Page**: Full article view with author bio, social sharing, related articles
+- **Authentication**: Login/Signup with email verification
 
-## What technologies are used for this project?
+### Admin Dashboard
+- **Dashboard**: Overview statistics
+- **Articles List**: Manage all articles with status filters
+- **New/Edit Article**: Rich editor with SEO fields
+- **Categories**: Manage news categories
+- **Users Management**: Assign roles to users
+- **SEO Settings**: Global SEO configuration
 
-This project is built with:
+## 🚀 Deployment
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Via Lovable (Recommended)
+1. Open the project in Lovable
+2. Click **Share → Publish**
+3. Your app will be live at `yourproject.lovable.app`
 
-## How can I deploy this project?
+### Custom Domain
+1. Go to **Project → Settings → Domains**
+2. Click **Connect Domain**
+3. Follow DNS configuration instructions
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Self-Hosting
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set environment variables
+4. Build: `npm run build`
+5. Deploy the `dist` folder to any static hosting
 
-## Can I connect a custom domain to my Lovable project?
+## 🔧 Local Development
 
-Yes, you can!
+```bash
+# Clone the repository
+git clone <YOUR_GIT_URL>
+cd <PROJECT_NAME>
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Install dependencies
+npm install
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## 📝 API Endpoints
+
+All data is accessed through Supabase client library. No custom API endpoints needed.
+
+```typescript
+import { supabase } from "@/integrations/supabase/client";
+
+// Fetch articles
+const { data } = await supabase
+  .from('news_articles')
+  .select('*')
+  .eq('status', 'published');
+```
+
+## 🎨 Customization
+
+### Colors & Theming
+Edit `src/index.css` for CSS variables and `tailwind.config.ts` for Tailwind configuration.
+
+### Categories
+Categories can be managed dynamically through the Admin Dashboard → Categories section.
+
+## 📞 Support
+
+For issues or feature requests, use the Lovable chat interface or check [Lovable Documentation](https://docs.lovable.dev/).
+
+---
+
+Built with ❤️ using [Lovable](https://lovable.dev)
