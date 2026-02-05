@@ -2,12 +2,15 @@ import { Link } from 'react-router-dom';
 import { Menu, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { SITE_NAME, SITE_TAGLINE, NEWS_CATEGORIES } from '@/lib/constants';
+import { NEWS_CATEGORIES } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LanguageSwitch } from '@/components/LanguageSwitch';
 
 export function Header() {
   const { user, isEditor, signOut } = useAuth();
-  
+  const { t, language } = useLanguage();
+
   const categories = Object.entries(NEWS_CATEGORIES);
 
   return (
@@ -15,30 +18,31 @@ export function Header() {
       {/* Top Bar */}
       <div className="bg-accent text-accent-foreground">
         <div className="container flex items-center justify-between py-2 text-sm">
-          <span>{new Date().toLocaleDateString('hi-IN', { 
+          <span>{new Date().toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { 
             weekday: 'long', 
             year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
           })}</span>
           <div className="flex items-center gap-4">
+            <LanguageSwitch />
             {user ? (
               <>
                 <Link to="/profile" className="hover:text-primary transition-colors">
-                  प्रोफ़ाइल
+                  {t('nav.profile')}
                 </Link>
                 {isEditor && (
                   <Link to="/admin" className="hover:text-primary transition-colors font-medium">
-                    एडमिन पैनल
+                    {t('nav.admin')}
                   </Link>
                 )}
                 <button onClick={signOut} className="hover:text-primary transition-colors">
-                  लॉग आउट
+                  {t('nav.logout')}
                 </button>
               </>
             ) : (
               <Link to="/auth" className="hover:text-primary transition-colors font-medium">
-                लॉग इन
+                {t('nav.login')}
               </Link>
             )}
           </div>
@@ -58,15 +62,15 @@ export function Header() {
             <SheetContent side="left" className="w-72">
               <nav className="flex flex-col gap-4 mt-8">
                 <Link to="/" className="text-lg font-semibold hover:text-primary">
-                  होम
+                  {t('nav.home')}
                 </Link>
-                {categories.map(([key, { label }]) => (
+                {categories.map(([key]) => (
                   <Link 
                     key={key} 
                     to={`/category/${key}`}
                     className="text-lg hover:text-primary transition-colors"
                   >
-                    {label}
+                    {t(`category.${key}`)}
                   </Link>
                 ))}
               </nav>
@@ -76,9 +80,9 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex flex-col items-center">
             <h1 className="text-3xl md:text-4xl font-bold text-primary font-display">
-              {SITE_NAME}
+              {t('site.name')}
             </h1>
-            <span className="text-xs text-muted-foreground">{SITE_TAGLINE}</span>
+            <span className="text-xs text-muted-foreground">{t('site.tagline')}</span>
           </Link>
 
           {/* Search & User */}
@@ -104,16 +108,16 @@ export function Header() {
                 to="/" 
                 className="inline-block px-4 py-3 font-medium hover:bg-primary-foreground/10 transition-colors"
               >
-                होम
+                {t('nav.home')}
               </Link>
             </li>
-            {categories.map(([key, { label }]) => (
+            {categories.map(([key]) => (
               <li key={key}>
                 <Link 
                   to={`/category/${key}`}
                   className="inline-block px-4 py-3 font-medium hover:bg-primary-foreground/10 transition-colors"
                 >
-                  {label}
+                  {t(`category.${key}`)}
                 </Link>
               </li>
             ))}
