@@ -4,10 +4,12 @@ import { NewsGrid } from '@/components/news/NewsGrid';
 import { useNewsArticles } from '@/hooks/useNews';
 import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
 import { Loader2 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const { data: articles, isLoading } = useNewsArticles(category as NewsCategory);
+  const { t, language } = useLanguage();
 
   const categoryInfo = category ? NEWS_CATEGORIES[category as NewsCategory] : null;
 
@@ -15,8 +17,8 @@ export default function CategoryPage() {
     return (
       <MainLayout>
         <div className="text-center py-20">
-          <h1 className="text-2xl font-bold mb-4">श्रेणी नहीं मिली</h1>
-          <p className="text-muted-foreground">यह श्रेणी मौजूद नहीं है।</p>
+          <h1 className="text-2xl font-bold mb-4">{t('category.notFound')}</h1>
+          <p className="text-muted-foreground">{t('category.notExists')}</p>
         </div>
       </MainLayout>
     );
@@ -32,14 +34,19 @@ export default function CategoryPage() {
     );
   }
 
+  const categoryLabel = t(`category.${category}`);
+
   return (
     <MainLayout>
       <div className="mb-8">
         <h1 className="text-3xl font-bold border-l-4 border-primary pl-4">
-          {categoryInfo.label}
+          {categoryLabel}
         </h1>
         <p className="text-muted-foreground mt-2">
-          {categoryInfo.label} से जुड़ी सभी ताज़ा खबरें
+          {language === 'hi' 
+            ? `${categoryLabel} ${t('category.allNews')}`
+            : `${t('category.allNews')} ${categoryLabel}`
+          }
         </p>
       </div>
 
@@ -48,7 +55,7 @@ export default function CategoryPage() {
       ) : (
         <div className="text-center py-12 bg-muted rounded-lg">
           <p className="text-muted-foreground">
-            इस श्रेणी में अभी कोई खबर नहीं है
+            {t('category.noNews')}
           </p>
         </div>
       )}

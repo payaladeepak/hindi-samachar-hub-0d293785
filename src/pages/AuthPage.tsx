@@ -6,22 +6,23 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
-import { SITE_NAME } from '@/lib/constants';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 
-const authSchema = z.object({
-  email: z.string().email('कृपया वैध ईमेल दर्ज करें'),
-  password: z.string().min(6, 'पासवर्ड कम से कम 6 अक्षर का होना चाहिए'),
-});
-
 export default function AuthPage() {
   const navigate = useNavigate();
   const { user, loading, signIn, signUp } = useAuth();
+  const { t } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const authSchema = z.object({
+    email: z.string().email(t('auth.validEmail')),
+    password: z.string().min(6, t('auth.passwordMin')),
+  });
 
   useEffect(() => {
     if (user && !loading) {
@@ -43,28 +44,28 @@ export default function AuthPage() {
         const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
-            toast.error('ईमेल या पासवर्ड गलत है');
+            toast.error(t('auth.invalidCredentials'));
           } else {
             toast.error(error.message);
           }
         } else {
-          toast.success('लॉगिन सफल');
+          toast.success(t('auth.loginSuccess'));
           navigate('/admin');
         }
       } else {
         const { error } = await signUp(email, password);
         if (error) {
           if (error.message.includes('already registered')) {
-            toast.error('यह ईमेल पहले से पंजीकृत है');
+            toast.error(t('auth.alreadyRegistered'));
           } else {
             toast.error(error.message);
           }
         } else {
-          toast.success('खाता बन गया! कृपया लॉगिन करें');
+          toast.success(t('auth.accountCreated'));
         }
       }
     } catch (error: any) {
-      toast.error('कुछ गलत हो गया');
+      toast.error(t('auth.error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -87,25 +88,25 @@ export default function AuthPage() {
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          होम पेज पर वापस जाएं
+          {t('nav.backHome')}
         </Link>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-display text-primary">{SITE_NAME}</CardTitle>
-            <CardDescription>एडमिन पैनल में लॉगिन करें</CardDescription>
+            <CardTitle className="text-2xl font-display text-primary">{t('site.name')}</CardTitle>
+            <CardDescription>{t('auth.adminPanel')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">लॉगिन</TabsTrigger>
-                <TabsTrigger value="signup">रजिस्टर</TabsTrigger>
+                <TabsTrigger value="login">{t('auth.loginTab')}</TabsTrigger>
+                <TabsTrigger value="signup">{t('auth.signupTab')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
                 <form onSubmit={(e) => { e.preventDefault(); handleSubmit('login'); }} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email">ईमेल</Label>
+                    <Label htmlFor="login-email">{t('auth.email')}</Label>
                     <Input
                       id="login-email"
                       type="email"
@@ -116,7 +117,7 @@ export default function AuthPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="login-password">पासवर्ड</Label>
+                    <Label htmlFor="login-password">{t('auth.password')}</Label>
                     <Input
                       id="login-password"
                       type="password"
@@ -128,7 +129,7 @@ export default function AuthPage() {
                   </div>
                   <Button type="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    लॉगिन करें
+                    {t('auth.loginButton')}
                   </Button>
                 </form>
               </TabsContent>
@@ -136,7 +137,7 @@ export default function AuthPage() {
               <TabsContent value="signup">
                 <form onSubmit={(e) => { e.preventDefault(); handleSubmit('signup'); }} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">ईमेल</Label>
+                    <Label htmlFor="signup-email">{t('auth.email')}</Label>
                     <Input
                       id="signup-email"
                       type="email"
@@ -147,19 +148,19 @@ export default function AuthPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">पासवर्ड</Label>
+                    <Label htmlFor="signup-password">{t('auth.password')}</Label>
                     <Input
                       id="signup-password"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="कम से कम 6 अक्षर"
+                      placeholder={t('auth.passwordPlaceholder')}
                       required
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    रजिस्टर करें
+                    {t('auth.signupButton')}
                   </Button>
                 </form>
               </TabsContent>
