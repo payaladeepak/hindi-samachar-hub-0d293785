@@ -167,6 +167,57 @@ export type Database = {
         }
         Relationships: []
       }
+      visitor_data: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          id: string
+          ip_address: string | null
+          is_subscribed_push: boolean | null
+          page_visited: string | null
+          push_token: string | null
+          referrer: string | null
+          user_agent: string | null
+          user_id: string | null
+          visitor_name: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          is_subscribed_push?: boolean | null
+          page_visited?: string | null
+          push_token?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_name?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          is_subscribed_push?: boolean | null
+          page_visited?: string | null
+          push_token?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_name?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

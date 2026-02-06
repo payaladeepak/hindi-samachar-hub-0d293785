@@ -17,6 +17,7 @@ import EditArticle from "./pages/admin/EditArticle";
 import CategoriesList from "./pages/admin/CategoriesList";
 import UsersManagement from "./pages/admin/UsersManagement";
 import SEOSettings from "./pages/admin/SEOSettings";
+import VisitorAnalytics from "./pages/admin/VisitorAnalytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/admin/articles/:id/edit" element={<EditArticle />} />
               <Route path="/admin/categories" element={<CategoriesList />} />
               <Route path="/admin/users" element={<UsersManagement />} />
+              <Route path="/admin/visitors" element={<VisitorAnalytics />} />
               <Route path="/admin/seo" element={<SEOSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
