@@ -8,13 +8,17 @@ import { SocialShareButtons } from '@/components/news/SocialShareButtons';
 import { AuthorBio } from '@/components/news/AuthorBio';
 import { Loader2, Clock, ArrowLeft, Eye } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
-import { hi } from 'date-fns/locale';
+import { hi, enUS } from 'date-fns/locale';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: article, isLoading, error } = useNewsArticle(slug || '');
   const { data: relatedArticles } = useNewsArticles(article?.category);
   const { data: liveViewCount } = useLiveViewCount(article?.id || '');
+  const { t, language } = useLanguage();
+  
+  const locale = language === 'hi' ? hi : enUS;
   
   // Track view when article is loaded
   useTrackView(article?.id);
@@ -33,10 +37,10 @@ export default function ArticlePage() {
     return (
       <MainLayout>
         <div className="text-center py-20">
-          <h1 className="text-2xl font-bold mb-4">खबर नहीं मिली</h1>
-          <p className="text-muted-foreground mb-6">यह खबर मौजूद नहीं है या हटा दी गई है।</p>
+          <h1 className="text-2xl font-bold mb-4">{t('article.notFound')}</h1>
+          <p className="text-muted-foreground mb-6">{t('article.notExists')}</p>
           <Link to="/" className="text-primary hover:underline">
-            ← होम पेज पर वापस जाएं
+            {t('article.backHome')}
           </Link>
         </div>
       </MainLayout>
@@ -44,6 +48,7 @@ export default function ArticlePage() {
   }
 
   const categoryInfo = NEWS_CATEGORIES[article.category];
+  const categoryLabel = t(`category.${article.category}`);
   const related = relatedArticles?.filter(a => a.id !== article.id).slice(0, 3) || [];
 
   return (
@@ -51,10 +56,10 @@ export default function ArticlePage() {
       <article className="max-w-4xl mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">होम</Link>
+          <Link to="/" className="hover:text-primary">{t('common.home')}</Link>
           <span>/</span>
           <Link to={`/category/${article.category}`} className="hover:text-primary">
-            {categoryInfo.label}
+            {categoryLabel}
           </Link>
         </div>
 
@@ -62,11 +67,11 @@ export default function ArticlePage() {
         <div className="flex items-center gap-2 mb-4">
           {article.is_breaking && (
             <span className="category-badge bg-breaking text-breaking-foreground breaking-pulse">
-              ब्रेकिंग
+              {t('common.breaking')}
             </span>
           )}
           <span className={`category-badge ${categoryInfo.color} text-white`}>
-            {categoryInfo.label}
+            {categoryLabel}
           </span>
         </div>
 
@@ -82,18 +87,18 @@ export default function ArticlePage() {
             <span>
               {formatDistanceToNow(new Date(article.published_at), { 
                 addSuffix: true, 
-                locale: hi 
+                locale 
               })}
             </span>
           </div>
           <span>•</span>
           <span>
-            {format(new Date(article.published_at), 'dd MMMM yyyy, h:mm a', { locale: hi })}
+            {format(new Date(article.published_at), 'dd MMMM yyyy, h:mm a', { locale })}
           </span>
           <span>•</span>
           <div className="flex items-center gap-1 text-primary font-medium">
             <Eye className="w-4 h-4" />
-            <span>{(liveViewCount ?? article.view_count ?? 0).toLocaleString('hi-IN')} व्यूज़</span>
+            <span>{(liveViewCount ?? article.view_count ?? 0).toLocaleString(language === 'hi' ? 'hi-IN' : 'en-IN')} {t('common.views')}</span>
           </div>
         </div>
 
@@ -131,7 +136,7 @@ export default function ArticlePage() {
             className="inline-flex items-center gap-2 text-primary hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
-            वापस होम पेज पर जाएं
+            {t('article.goBackHome')}
           </Link>
           
           <SocialShareButtons 
@@ -148,7 +153,7 @@ export default function ArticlePage() {
       {related.length > 0 && (
         <section className="mt-12 pt-12 border-t">
           <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-4">
-            संबंधित खबरें
+            {t('common.related')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {related.map((relatedArticle) => (

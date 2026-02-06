@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { Clock, ArrowRight, Eye } from 'lucide-react';
 import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
 import { formatDistanceToNow } from 'date-fns';
-import { hi } from 'date-fns/locale';
+import { hi, enUS } from 'date-fns/locale';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NewsCardProps {
   id: string;
@@ -28,11 +29,15 @@ export function NewsCard({
   view_count = 0,
   variant = 'default',
 }: NewsCardProps) {
+  const { t, language } = useLanguage();
   const categoryInfo = NEWS_CATEGORIES[category];
+  const locale = language === 'hi' ? hi : enUS;
   const timeAgo = formatDistanceToNow(new Date(published_at), { 
     addSuffix: true, 
-    locale: hi 
+    locale 
   });
+
+  const categoryLabel = t(`category.${category}`);
 
   if (variant === 'featured') {
     return (
@@ -62,11 +67,11 @@ export function NewsCard({
             <div className="flex items-center gap-2 mb-3">
               {is_breaking && (
                 <span className="category-badge bg-breaking text-breaking-foreground breaking-pulse">
-                  ब्रेकिंग
+                  {t('common.breaking')}
                 </span>
               )}
               <span className={`category-badge ${categoryInfo.color} text-white`}>
-                {categoryInfo.label}
+                {categoryLabel}
               </span>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold mb-3 line-clamp-3 group-hover:text-primary-foreground transition-colors">
@@ -83,11 +88,11 @@ export function NewsCard({
                 </div>
                 <div className="flex items-center gap-1">
                   <Eye className="w-4 h-4" />
-                  <span>{view_count.toLocaleString('hi-IN')}</span>
+                  <span>{view_count.toLocaleString(language === 'hi' ? 'hi-IN' : 'en-IN')}</span>
                 </div>
               </div>
               <span className="flex items-center gap-1 text-sm text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                पढ़ें <ArrowRight className="w-4 h-4" />
+                {t('common.read')} <ArrowRight className="w-4 h-4" />
               </span>
             </div>
           </div>
@@ -111,7 +116,7 @@ export function NewsCard({
           </div>
           <div className="flex-1 min-w-0">
             <span className={`category-badge ${categoryInfo.color} text-white text-xs mb-1 inline-block`}>
-              {categoryInfo.label}
+              {categoryLabel}
             </span>
             <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {title}
@@ -124,7 +129,7 @@ export function NewsCard({
               <span>•</span>
               <div className="flex items-center gap-1">
                 <Eye className="w-3 h-3" />
-                <span>{view_count.toLocaleString('hi-IN')}</span>
+                <span>{view_count.toLocaleString(language === 'hi' ? 'hi-IN' : 'en-IN')}</span>
               </div>
             </div>
           </div>
@@ -157,18 +162,18 @@ export function NewsCard({
           
           {is_breaking && (
             <span className="absolute top-3 left-3 category-badge bg-breaking text-breaking-foreground breaking-pulse">
-              ब्रेकिंग
+              {t('common.breaking')}
             </span>
           )}
           
           {/* Read more indicator */}
           <div className="absolute bottom-3 right-3 bg-primary text-primary-foreground text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 flex items-center gap-1 shadow-lg">
-            पढ़ें <ArrowRight className="w-3 h-3" />
+            {t('common.read')} <ArrowRight className="w-3 h-3" />
           </div>
         </div>
         <div className="p-5">
           <span className={`category-badge ${categoryInfo.color} text-white text-xs mb-2 inline-block`}>
-            {categoryInfo.label}
+            {categoryLabel}
           </span>
           <h3 className="font-bold text-lg line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-2">
             {title}
@@ -184,7 +189,7 @@ export function NewsCard({
               </div>
               <div className="flex items-center gap-1">
                 <Eye className="w-3 h-3" />
-                <span>{view_count.toLocaleString('hi-IN')}</span>
+                <span>{view_count.toLocaleString(language === 'hi' ? 'hi-IN' : 'en-IN')}</span>
               </div>
             </div>
           </div>
