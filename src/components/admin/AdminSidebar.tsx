@@ -11,7 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   FolderOpen,
-  Search
+  Search,
+  Eye
 } from 'lucide-react';
 import { SITE_NAME } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,6 +27,7 @@ const getNavItems = (isAdmin: boolean) => {
     { icon: PlusCircle, label: 'नई खबर', href: '/admin/articles/new', adminOnly: false },
     { icon: FolderOpen, label: 'श्रेणियां', href: '/admin/categories', adminOnly: true },
     { icon: Users, label: 'यूजर प्रबंधन', href: '/admin/users', adminOnly: true },
+    { icon: Eye, label: 'विज़िटर डेटा', href: '/admin/visitors', adminOnly: true },
     { icon: Search, label: 'SEO सेटिंग्स', href: '/admin/seo', adminOnly: true },
   ];
   
