@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
-import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
+import { useCategoryMap } from '@/hooks/useCategories';
 import { formatDistanceToNow } from 'date-fns';
 import { hi } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -54,6 +54,8 @@ export function FlipSlider({ articles, autoPlay = true, interval = 5000 }: FlipS
     return () => clearInterval(timer);
   }, [autoPlay, interval, goToNext, articles.length]);
 
+  const categoryMap = useCategoryMap();
+
   if (articles.length === 0) {
     return (
       <div className="h-[400px] md:h-[500px] bg-muted rounded-xl flex items-center justify-center">
@@ -63,7 +65,7 @@ export function FlipSlider({ articles, autoPlay = true, interval = 5000 }: FlipS
   }
 
   const currentArticle = articles[currentIndex];
-  const categoryInfo = NEWS_CATEGORIES[currentArticle.category as NewsCategory];
+  const categoryInfo = categoryMap[currentArticle.category];
   const timeAgo = formatDistanceToNow(new Date(currentArticle.published_at), { 
     addSuffix: true, 
     locale: hi 
