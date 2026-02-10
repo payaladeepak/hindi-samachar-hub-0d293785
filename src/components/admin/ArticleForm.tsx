@@ -8,9 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ARTICLE_STATUS, type ArticleStatus } from '@/lib/constants';
+import { NEWS_CATEGORIES, ARTICLE_STATUS, type NewsCategory, type ArticleStatus } from '@/lib/constants';
 import { useCreateArticle, useUpdateArticle, type NewsArticle } from '@/hooks/useNews';
-import { useActiveCategories } from '@/hooks/useCategories';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, ChevronDown, Save, Send, CheckCircle } from 'lucide-react';
@@ -38,7 +37,6 @@ function generateSlug(title: string): string {
 export function ArticleForm({ article }: ArticleFormProps) {
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
-  const { data: categories } = useActiveCategories();
   const createArticle = useCreateArticle();
   const updateArticle = useUpdateArticle();
   const [seoOpen, setSeoOpen] = useState(false);
@@ -47,7 +45,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
     title: article?.title || '',
     excerpt: article?.excerpt || '',
     content: article?.content || '',
-    category: article?.category || 'national',
+    category: article?.category || 'national' as NewsCategory,
     image_url: article?.image_url || '',
     is_breaking: article?.is_breaking || false,
     is_featured: article?.is_featured || false,
@@ -147,15 +145,15 @@ export function ArticleForm({ article }: ArticleFormProps) {
             <Label>श्रेणी</Label>
             <Select
               value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
+              onValueChange={(value: NewsCategory) => setFormData({ ...formData, category: value })}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {categories?.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.name}>
-                    {cat.label}
+                {Object.entries(NEWS_CATEGORIES).map(([key, { label }]) => (
+                  <SelectItem key={key} value={key}>
+                    {label}
                   </SelectItem>
                 ))}
               </SelectContent>
