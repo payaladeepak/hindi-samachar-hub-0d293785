@@ -51,7 +51,7 @@ export type Database = {
         Row: {
           author_id: string | null
           canonical_url: string | null
-          category: Database["public"]["Enums"]["news_category"]
+          category: string
           content: string
           created_at: string
           excerpt: string | null
@@ -73,7 +73,7 @@ export type Database = {
         Insert: {
           author_id?: string | null
           canonical_url?: string | null
-          category?: Database["public"]["Enums"]["news_category"]
+          category?: string
           content: string
           created_at?: string
           excerpt?: string | null
@@ -95,7 +95,7 @@ export type Database = {
         Update: {
           author_id?: string | null
           canonical_url?: string | null
-          category?: Database["public"]["Enums"]["news_category"]
+          category?: string
           content?: string
           created_at?: string
           excerpt?: string | null
@@ -259,15 +259,6 @@ export type Database = {
     Enums: {
       app_role: "admin" | "editor" | "user"
       article_status: "draft" | "pending_review" | "published"
-      news_category:
-        | "politics"
-        | "sports"
-        | "entertainment"
-        | "national"
-        | "international"
-        | "business"
-        | "technology"
-        | "health"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -397,16 +388,6 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "editor", "user"],
       article_status: ["draft", "pending_review", "published"],
-      news_category: [
-        "politics",
-        "sports",
-        "entertainment",
-        "national",
-        "international",
-        "business",
-        "technology",
-        "health",
-      ],
     },
   },
 } as const
