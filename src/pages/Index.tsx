@@ -5,7 +5,7 @@ import { FlipSlider } from '@/components/news/FlipSlider';
 import { PopularArticles } from '@/components/news/PopularArticles';
 import { CategoryPopularityWidget } from '@/components/news/CategoryPopularityWidget';
 import { useNewsArticles, useFeaturedNews } from '@/hooks/useNews';
-import { useActiveCategories } from '@/hooks/useCategories';
+import { NEWS_CATEGORIES } from '@/lib/constants';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -13,7 +13,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export default function Index() {
   const { data: articles, isLoading } = useNewsArticles();
   const { data: featuredArticle } = useFeaturedNews();
-  const { data: categories } = useActiveCategories();
   const { t } = useLanguage();
 
   if (isLoading) {
@@ -90,19 +89,19 @@ export default function Index() {
       </section>
 
       {/* Category Sections */}
-      {categories?.map((cat) => {
-        const categoryArticles = articles?.filter(a => a.category === cat.name).slice(0, 3) || [];
+      {Object.entries(NEWS_CATEGORIES).slice(0, 4).map(([key, { label }]) => {
+        const categoryArticles = articles?.filter(a => a.category === key).slice(0, 3) || [];
         
         if (categoryArticles.length === 0) return null;
 
         return (
-          <section key={cat.id} className="mb-12">
+          <section key={key} className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold border-l-4 border-primary pl-4">
-                {cat.label}
+                {t(`category.${key}`)}
               </h2>
               <Link 
-                to={`/category/${cat.name}`}
+                to={`/category/${key}`}
                 className="text-primary hover:underline font-medium"
               >
                 {t('common.seeMore')}

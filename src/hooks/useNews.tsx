@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { ArticleStatus } from '@/lib/constants';
+import type { NewsCategory, ArticleStatus } from '@/lib/constants';
 
 export interface NewsArticle {
   id: string;
@@ -8,7 +8,7 @@ export interface NewsArticle {
   slug: string;
   excerpt: string | null;
   content: string;
-  category: string;
+  category: NewsCategory;
   image_url: string | null;
   is_breaking: boolean;
   is_featured: boolean;
@@ -25,7 +25,7 @@ export interface NewsArticle {
   status: ArticleStatus;
 }
 
-export function useNewsArticles(category?: string) {
+export function useNewsArticles(category?: NewsCategory) {
   return useQuery({
     queryKey: ['news', category],
     queryFn: async () => {

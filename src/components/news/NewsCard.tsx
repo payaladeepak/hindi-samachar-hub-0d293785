@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Clock, ArrowRight, Eye } from 'lucide-react';
-import { useCategoryMap } from '@/hooks/useCategories';
+import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
 import { formatDistanceToNow } from 'date-fns';
 import { hi, enUS } from 'date-fns/locale';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,7 +10,7 @@ interface NewsCardProps {
   title: string;
   slug: string;
   excerpt: string | null;
-  category: string;
+  category: NewsCategory;
   image_url: string | null;
   published_at: string;
   is_breaking?: boolean;
@@ -30,15 +30,14 @@ export function NewsCard({
   variant = 'default',
 }: NewsCardProps) {
   const { t, language } = useLanguage();
-  const categoryMap = useCategoryMap();
-  const categoryInfo = categoryMap[category] || { label: category, color: 'bg-muted' };
+  const categoryInfo = NEWS_CATEGORIES[category];
   const locale = language === 'hi' ? hi : enUS;
   const timeAgo = formatDistanceToNow(new Date(published_at), { 
     addSuffix: true, 
     locale 
   });
 
-  const categoryLabel = categoryInfo.label;
+  const categoryLabel = t(`category.${category}`);
 
   if (variant === 'featured') {
     return (
