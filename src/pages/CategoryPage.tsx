@@ -2,16 +2,17 @@ import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/layouts/MainLayout';
 import { NewsGrid } from '@/components/news/NewsGrid';
 import { useNewsArticles } from '@/hooks/useNews';
-import { NEWS_CATEGORIES, type NewsCategory } from '@/lib/constants';
+import { useCategoryMap } from '@/hooks/useCategories';
 import { Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
-  const { data: articles, isLoading } = useNewsArticles(category as NewsCategory);
+  const { data: articles, isLoading } = useNewsArticles(category);
   const { t, language } = useLanguage();
+  const categoryMap = useCategoryMap();
 
-  const categoryInfo = category ? NEWS_CATEGORIES[category as NewsCategory] : null;
+  const categoryInfo = category ? categoryMap[category] : null;
 
   if (!categoryInfo) {
     return (
@@ -34,7 +35,7 @@ export default function CategoryPage() {
     );
   }
 
-  const categoryLabel = t(`category.${category}`);
+  const categoryLabel = categoryInfo.label;
 
   return (
     <MainLayout>

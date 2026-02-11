@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AdminLayout } from '@/layouts/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,26 +7,63 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Search, Globe, FileText, Link2, CheckCircle, AlertCircle, ExternalLink, ShieldAlert } from 'lucide-react';
+import { Search, Globe, FileText, CheckCircle, ExternalLink, ShieldAlert, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useSEOSettings } from '@/hooks/useSEOSettings';
 
 export default function SEOSettings() {
   const { isAdmin } = useAuth();
+  const { settings, isLoading, updateSettings } = useSEOSettings();
   
   const [siteSettings, setSiteSettings] = useState({
-    siteName: 'ताज़ा खबर',
-    siteDescription: 'भारत की सबसे विश्वसनीय हिंदी समाचार वेबसाइट',
-    defaultKeywords: 'हिंदी समाचार, ताज़ा खबर, भारत समाचार, राजनीति, खेल, मनोरंजन',
+    siteName: '',
+    siteDescription: '',
+    defaultKeywords: '',
     googleVerification: '',
     bingVerification: '',
     googleAnalyticsId: '',
   });
 
-  const handleSave = () => {
-    // In a real app, this would save to database
-    toast.success('SEO सेटिंग्स सहेजी गईं');
+  // Load settings from database
+  useEffect(() => {
+    if (settings) {
+      setSiteSettings({
+        siteName: settings.site_name,
+        siteDescription: settings.site_description,
+        defaultKeywords: settings.default_keywords,
+        googleVerification: settings.google_verification,
+        bingVerification: settings.bing_verification,
+        googleAnalyticsId: settings.google_analytics_id,
+      });
+    }
+  }, [settings]);
+
+  const handleSave = async () => {
+    try {
+      await updateSettings.mutateAsync({
+        site_name: siteSettings.siteName,
+        site_description: siteSettings.siteDescription,
+        default_keywords: siteSettings.defaultKeywords,
+        google_verification: siteSettings.googleVerification,
+        bing_verification: siteSettings.bingVerification,
+        google_analytics_id: siteSettings.googleAnalyticsId,
+      });
+      toast.success('SEO सेटिंग्स सहेजी गईं');
+    } catch (error) {
+      toast.error('सेटिंग्स सहेजने में त्रुटि');
+    }
   };
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   // Only admins can access global SEO settings
   if (!isAdmin) {
@@ -117,7 +154,10 @@ export default function SEOSettings() {
                   </p>
                 </div>
 
-                <Button onClick={handleSave}>सहेजें</Button>
+                <Button onClick={handleSave} disabled={updateSettings.isPending}>
+                  {updateSettings.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  सहेजें
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -180,7 +220,10 @@ export default function SEOSettings() {
                   />
                 </div>
 
-                <Button onClick={handleSave}>सहेजें</Button>
+                <Button onClick={handleSave} disabled={updateSettings.isPending}>
+                  {updateSettings.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  सहेजें
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
